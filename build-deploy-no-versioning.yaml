@@ -1,0 +1,109 @@
+resource_types:
+  - name: email
+    type: docker-image
+    source:
+      repository: pcfseceng/email-resource
+
+resources:
+- name: send-an-email
+  type: email
+  source:
+    smtp:
+      host: smtp.gmail.com
+      port: "587"
+      username: guldentechjobs
+      password: ((email_password))
+    from: guldentechjobs@gmail.com
+    to: ["((email))"]
+
+- name: repo
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:((git_user))/((repo_name)).git
+    branch: ((branch))
+    private_key: |
+      ((github.ssh-privatekey))
+
+- name: push-image
+  type: docker-image
+  icon: docker
+  source:
+    repository: harbor.guldentech.com/((project))/((repo_name))
+    username: ((registry.username))
+    password: ((registry.password))
+
+jobs:
+- name: test-code
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "GuldenTech Notification - Job Failed"
+      body_text: "${BUILD_PIPELINE_NAME} finished with errors. Please see the concourse console."
+  plan:
+  - get: repo
+    trigger: true
+  - task: test-code
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source: 
+          repository: busybox
+      inputs:
+      - name: repo
+      run:
+        path: ls
+        args: ["-al"]
+        dir: repo
+
+- name: build-image
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "GuldenTech Notification - Job Failed"
+      body_text: "${BUILD_PIPELINE_NAME} finished with errors. Please see the concourse console."
+  plan:
+  - get: repo
+    passed: [test-code]
+    trigger: true
+  - put: push-image
+    params:
+      build: repo
+
+- name: deploy-resources
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "GuldenTech Notification - Job Failed"
+      body_text: "${BUILD_PIPELINE_NAME} finished with errors. Please see the concourse console."
+  plan:
+  - get: repo
+    passed: [build-image]
+    trigger: true
+  - task: run-bash-script
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source: 
+          repository: jmkarthik/concourse-kubectl-resource
+      inputs:
+      - name: repo
+      run:
+        dir: repo
+        path: sh
+        args:
+          - "-c"
+          - |
+            echo '-> Running sed commands.'
+            version="latest"
+            sed -i 's|TAG|'"$version"'|g' manifests/deployment.yaml
+            sed -i 's|THE_VERSION|'"$RANDOM"'|g' manifests/deployment.yaml
+            echo '-> Done.'
+            echo ''
+
+            echo '-> Running kubectl apply and rollout commands.'
+            k8params="--token=((rancher.token)) --server=https://rancher2.guldentech.com/k8s/clusters/((cluster))"
+            kubectl apply -f manifests ${k8params}
+            echo '-> Done.'
