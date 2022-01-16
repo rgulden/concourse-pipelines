@@ -1,5 +1,7 @@
 # Concourse pipeline creation
 
+![diagram](build_deploy.png)
+
 ## Repo setup
 
 ```bash
