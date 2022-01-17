@@ -99,7 +99,7 @@ jobs:
             echo '-> Running sed commands.'
             version="latest"
             sed -i 's|TAG|'"$version"'|g' manifests/deployment.yaml
-            sed -i 's|THE_VERSION|'"$RANDOM"'|g' manifests/deployment.yaml
+            sed -i 's|THE_VERSION|"'"$RANDOM"'"|g' manifests/deployment.yaml
             echo '-> Done.'
             echo ''
 
