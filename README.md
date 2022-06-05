@@ -22,8 +22,7 @@ imagePullSecrets:
 - name: guldentech-harbor-registry
 ```
 
-This is only for non version controlled repos
-```yamls
+```yaml
 env:
 - name: version
   value: THE_VERSION
