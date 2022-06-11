@@ -33,7 +33,7 @@ env:
 ```bash
 # concourse-team is the same as rancher and harbor project
 # local is the prod cluster
-# c-m-48j66fz4 is the dev cluster
+# c-m-tx98dzlh is the dev cluster
 
 ./fly -t guldentech set-pipeline \
 	-p {repo_name} \
@@ -43,7 +43,7 @@ env:
 	-v repo_name={repo_name} \
 	-v branch={branch} \
 	-v project={rancher/harbor_project} \
-	-v cluster=local/c-m-tx98dzlh \
+	-v cluster={local or c-m-tx98dzlh} \
 	-v email={notification_email} \
 	-v email_password={gmail_password}
 ```
