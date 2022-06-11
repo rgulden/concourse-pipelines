@@ -43,7 +43,7 @@ env:
 	-v repo_name={repo_name} \
 	-v branch={branch} \
 	-v project={rancher/harbor_project} \
-	-v cluster=local/c-m-48j66fz4 \
+	-v cluster=local/c-m-tx98dzlh \
 	-v email={notification_email} \
 	-v email_password={gmail_password}
 ```
