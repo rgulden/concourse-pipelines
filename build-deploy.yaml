@@ -70,6 +70,8 @@ jobs:
   - put: push-image
     params:
       build: repo
+    get_params:
+      skip_download: true
 
 - name: deploy-resources
   on_success:
