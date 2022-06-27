@@ -1,14 +1,15 @@
 # Concourse pipeline creation
 
-![diagram](build_deploy.png)
+![diagram](resources/build_deploy.png)
 
 ## Repo setup
 
 ```bash
+ci/
+	variables.yaml
 manifests/
 	deployment.yaml
 	version
-	other_yaml_files.yaml
 ```
 
 In the deployment file make sure the following are updated.
@@ -28,24 +29,29 @@ env:
   value: THE_VERSION
 ```
 
+### Create the variables file
+
+```bash
+# While inside your repo
+mkdir ci
+touch ci/variables.yaml
+```
+
+Copy the contents of the concourse-pipelines config/variables.yaml file into this new file and update the settings.
+
+
 ## Creating the pipeline
 
 ```bash
-# concourse-team is the same as rancher and harbor project
-# local is the prod cluster
-# c-m-tx98dzlh is the dev cluster
+# While inside your repo
+# Clone the concourse repo & your repo
+# Cd into your repo and run
 
 ./fly -t guldentech set-pipeline \
 	-p {repo_name} \
-	-c build-deploy.yaml \
+	-c  ../concourse-pipelines/pipelines/build-deploy.yaml \
 	--team={concourse-team} \
-	-v git_user={git_user} \
-	-v repo_name={repo_name} \
-	-v branch={branch} \
-	-v project={rancher/harbor_project} \
-	-v cluster={local or c-m-tx98dzlh} \
-	-v email={notification_email} \
-	-v email_password={gmail_password}
+	-l ci/variables.yaml
 ```
 
 ## Delete pipeline

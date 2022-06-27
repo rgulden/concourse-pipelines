@@ -12,16 +12,16 @@ resources:
       host: smtp.gmail.com
       port: "587"
       username: guldentechjobs
-      password: ((email_password))
+      password: ((email.email_password))
     from: guldentechjobs@gmail.com
-    to: ["((email))"]
+    to: ["((email.email))"]
 
 - name: repo
   type: git
   icon: github
   source:
-    uri: git@github.com:((git_user))/((repo_name)).git
-    branch: ((branch))
+    uri: git@github.com:((git.git_user))/((git.repo_name)).git
+    branch: ((git.branch))
     private_key: |
       ((github.ssh-privatekey))
 
@@ -29,7 +29,7 @@ resources:
   type: docker-image
   icon: docker
   source:
-    repository: harbor.guldentech.com/((project))/((repo_name))
+    repository: harbor.guldentech.com/((deploy.project))/((git.repo_name))
     username: ((registry.username))
     password: ((registry.password))
 
@@ -103,6 +103,7 @@ jobs:
         args:
           - "-c"
           - |
+            set -e
             echo '-> Updating image tag.'
             version=$(cat manifests/version)
             curl -X POST \
@@ -110,16 +111,17 @@ jobs:
               -H 'accept: application/json' \
               -H 'Content-Type: application/json' \
               -d '{ "name": "'"$version"'" }' \
-              https://harbor.guldentech.com/api/v2.0/projects/((project))/repositories/((repo_name))/artifacts/latest/tags
+              https://harbor.guldentech.com/api/v2.0/projects/((deploy.project))/repositories/((git.repo_name))/artifacts/latest/tags
             echo '-> Done.'
             echo ''
 
             echo '-> Running sed commands.'
             sed -i 's|TAG|'"$version"'|g' manifests/deployment.yaml
+            sed -i 's|THE_VERSION|"'"$version"'"|g' manifests/deployment.yaml
             echo '-> Done.'
             echo ''
 
             echo '-> Running kubectl apply and rollout commands.'
-            k8params="--token=((rancher.token)) --server=https://console.guldentech.com/k8s/clusters/((cluster))"
+            k8params="--token=((rancher.token)) --server=https://console.guldentech.com/k8s/clusters/((deploy.cluster))"
             kubectl apply -f manifests ${k8params}
             echo '-> Done.'
