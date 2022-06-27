@@ -44,10 +44,12 @@ Copy the contents of the concourse-pipelines config/variables.yaml file into thi
 
 ```bash
 # While inside your repo
+# Change the path to the build-deploy.yaml based on 
+# where you are.
 
 ./fly -t guldentech set-pipeline \
 	-p {repo_name} \
-	-c build-deploy.yaml \
+	-c pipelines/build-deploy.yaml \
 	--team={concourse-team} \
 	-l ci/variables.yaml
 ```

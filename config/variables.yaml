@@ -16,7 +16,7 @@ git:
 # For cluster it can be either
 # - local for production
 # - c-m-tx98dzlh for development
-rancher:
+deploy:
   project: update_me
   cluster: update_me
 

@@ -29,7 +29,7 @@ resources:
   type: docker-image
   icon: docker
   source:
-    repository: harbor.guldentech.com/((rancher.project))/((git.repo_name))
+    repository: harbor.guldentech.com/((deploy.project))/((git.repo_name))
     username: ((registry.username))
     password: ((registry.password))
 
@@ -111,16 +111,17 @@ jobs:
               -H 'accept: application/json' \
               -H 'Content-Type: application/json' \
               -d '{ "name": "'"$version"'" }' \
-              https://harbor.guldentech.com/api/v2.0/projects/((rancher.project))/repositories/((git.repo_name))/artifacts/latest/tags
+              https://harbor.guldentech.com/api/v2.0/projects/((deploy.project))/repositories/((git.repo_name))/artifacts/latest/tags
             echo '-> Done.'
             echo ''
 
             echo '-> Running sed commands.'
             sed -i 's|TAG|'"$version"'|g' manifests/deployment.yaml
+            sed -i 's|THE_VERSION|"'"$version"'"|g' manifests/deployment.yaml
             echo '-> Done.'
             echo ''
 
             echo '-> Running kubectl apply and rollout commands.'
-            k8params="--token=((rancher.token)) --server=https://console.guldentech.com/k8s/clusters/((rancher.cluster))"
+            k8params="--token=((rancher.token)) --server=https://console.guldentech.com/k8s/clusters/((deploy.cluster))"
             kubectl apply -f manifests ${k8params}
             echo '-> Done.'

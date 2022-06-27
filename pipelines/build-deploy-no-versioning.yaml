@@ -29,7 +29,7 @@ resources:
   type: docker-image
   icon: docker
   source:
-    repository: harbor.guldentech.com/((rancher.project))/((git.repo_name))
+    repository: harbor.guldentech.com/((deploy.project))/((git.repo_name))
     username: ((registry.username))
     password: ((registry.password))
 
@@ -107,6 +107,6 @@ jobs:
             echo ''
 
             echo '-> Running kubectl apply and rollout commands.'
-            k8params="--token=((rancher.token)) --server=https://console.guldentech.com/k8s/clusters/((rancher.cluster))"
+            k8params="--token=((rancher.token)) --server=https://console.guldentech.com/k8s/clusters/((deploy.cluster))"
             kubectl apply -f manifests ${k8params}
             echo '-> Done.'
