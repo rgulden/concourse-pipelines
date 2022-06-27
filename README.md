@@ -37,19 +37,19 @@ mkdir ci
 touch ci/variables.yaml
 ```
 
-Copy the contents of the concourse-pipelines config/variables.yaml file into this new file and update the settings
+Copy the contents of the concourse-pipelines config/variables.yaml file into this new file and update the settings.
 
 
 ## Creating the pipeline
 
 ```bash
 # While inside your repo
-# Change the path to the build-deploy.yaml based on 
-# where you are.
+# Clone the concourse repo & your repo
+# Cd into your repo and run
 
 ./fly -t guldentech set-pipeline \
 	-p {repo_name} \
-	-c pipelines/build-deploy.yaml \
+	-c  ../concourse-pipelines/pipelines/build-deploy.yaml \
 	--team={concourse-team} \
 	-l ci/variables.yaml
 ```
