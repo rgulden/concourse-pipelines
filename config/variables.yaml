@@ -1,0 +1,28 @@
+# Note: Pleas do not save email_password in git.
+# Instructions: change all the 'update_me' with the correct information
+
+
+# This section is all the information of your source repo
+# Git User is your github username
+# This is your github repo name
+# this is the branch you would like your pipeline to pull from in the repo
+git:
+  git_user: update_me
+  repo_name: update_me
+  branch: update_me
+
+# This section is all the info about the deployment
+# Project is the name of your rancher project
+# For cluster it can be either
+# - local for production
+# - c-m-tx98dzlh for development
+rancher:
+  project: update_me
+  cluster: update_me
+
+# This section is for your email alert on failure
+# Enter the email you would like a notification on
+# Enter the password for guldentech email. (Obtain this from Ryan)
+email:
+  email: update_me
+  email_password: update_me
